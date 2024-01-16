@@ -21,10 +21,31 @@ describe ("GET /api/topics", () => {
         response.body.topics.forEach((topic) => {
             expect(topic).toHaveProperty('slug', expect.any(String));
             expect(topic).toHaveProperty('description', expect.any(String));
-        })
-    })
+        });
     });
-    test("404: responds with 404 when non-existant path", () => {
+    });
+});
+
+describe("GET/api", () => {
+    test("status 200, returns an object detailing available endpoints", () => {
+        return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+            const expected = {
+                "endpoints": {
+                "GET /api": expect.any(Object),
+                "GET /api/topics": expect.any(Object),
+                "GET /api/articles": expect.any(Object)
+                }
+            };
+            expect(response.body).toEqual(expected);
+        });
+    });
+});
+
+describe("error tests", () => {
+    test("404: responds with 404 when non-existent path", () => {
         return request(app)
         .get("/api/tpics")
         .expect(404)
