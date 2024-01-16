@@ -2,8 +2,6 @@ const express = require("express");
 const app = express();
 const { getTopics } = require("./controllers/topics.controllers");
 
-console.log("in the app")
-
 app.get("/api/topics", getTopics);
 
 app.all("*", (req, res) => {

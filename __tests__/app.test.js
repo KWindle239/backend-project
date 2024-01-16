@@ -16,7 +16,6 @@ describe ("GET /api/topics", () => {
     .get("/api/topics")
     .expect(200)
     .then((response) => {
-        console.log(response.body.topics)
         expect(response.body.topics).toBeInstanceOf(Array);
         expect(response.body.topics).toHaveLength(3);
         response.body.topics.forEach((topic) => {
