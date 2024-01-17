@@ -2,7 +2,8 @@ const request = require("supertest");
 const app = require("../app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
-const testData = require("../db/data/test-data")
+const testData = require("../db/data/test-data");
+require("jest-sorted");
 
 beforeEach(() => seed(testData));
 
@@ -83,6 +84,45 @@ describe("GET /api/articles/: article_id", () => {
                 article_img_url: expect.any(String)
                 };
             expect(body.article).toEqual(expected);
+        });
+    });
+});
+
+describe("GET /api/articles", () => {
+    test("status 200, responds with an array of article objects with the needed properties", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+            const expected = {
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String)
+            }
+            expect(body.articles).toBeInstanceOf(Array);
+            expect(body.articles[0]).toMatchObject(expected);
+        });
+    });
+    test("responds with an array where articles are sorted by date in descending order", () => {
+        return request(app)
+        .get("/api/articles")
+        .then(({ body }) => {
+            expect(body.articles).toBeSortedBy("created_at", {
+                descending: true,
+              });
+        });
+    });
+    test("responds with article objects which don't have a body property", () => {
+        return request(app)
+        .get("/api/articles")
+        .then(({ body }) => {
+            unwantedProperty = {body: expect.any(String)};
+            expect(body.articles[0]).toEqual(expect.not.objectContaining(unwantedProperty));
         });
     });
 });
