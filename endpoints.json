@@ -59,7 +59,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "adds a comment to the database and returns the added comment",
+    "description": "adds a comment to the database and returns the added comment; request body accepts an object with username and body properties",
     "queries": [],
     "exampleResponse": {
       "comment": [
@@ -71,6 +71,24 @@
           "author": "icellusedkars",
           "created_at": "2018-05-30T15:59:13.341Z"
          }
+       ]
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the relevant article's votes property and returns the article when passed; request body accepts an object in the form { inc_votes: newVote } where new vote is a number",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 50,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
        ]
     }
   }
