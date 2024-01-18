@@ -40,7 +40,8 @@ describe("GET /api", () => {
                 "GET /api/articles": expect.any(Object),
                 "GET /api/articles/:article_id": expect.any(Object),
                 "GET /api/articles/:article_id/comments": expect.any(Object),
-                "POST /api/articles/:article_id/comments": expect.any(Object)
+                "POST /api/articles/:article_id/comments": expect.any(Object),
+                "PATCH /api/articles/:article_id": expect.any(Object)
                 }
             };
             expect(response.body).toEqual(expected);
@@ -184,7 +185,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         })
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Endpoint Not Found")
+            expect(response.body.msg).toBe("Not Found")
         });
     });
     test("status 400, responds with 400 when the new comment object has no body property", () => {
@@ -196,6 +197,49 @@ describe("POST /api/articles/:article_id/comments", () => {
         .expect(400)
         .then((response) => {
             expect(response.body.msg).toBe("Bad Request")
+        });
+    });
+    test("status 400, responds with 400 when an invalid (incorrect data type) article id is used", () => {
+        return request(app)
+        .post("/api/articles/pineapple/comments")
+        .send({
+            username: "icellusedkars",
+            body: "Not my cup of tea"
+        })
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("Bad Request")
+        });
+    });
+})
+
+describe("PATCH /api/articles/:article_id", () => {
+    test("status 200, responds with the updated article", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes : -50 })
+        .expect(200)
+        .then((response) => {
+            expect(response.body.article).toEqual({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: expect.any(String),
+                votes: 50,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+        });
+    });
+    test("status 400, responds with 400 when an object with an invalid inc_votes value", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes : "cactus" })
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("Bad Request");
         });
     });
 })
