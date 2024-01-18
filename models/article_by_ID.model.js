@@ -1,5 +1,3 @@
-const { table } = require("console");
-const fs = require("fs/promises");
 const db = require("../db/connection");
 
 exports.findArticleById = (article_id) => {

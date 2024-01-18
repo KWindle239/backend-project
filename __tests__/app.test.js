@@ -244,6 +244,30 @@ describe("PATCH /api/articles/:article_id", () => {
     });
 })
 
+describe("DELETE /api/comments/:comment_id", () => {
+    test("status 204, responds with 204 after deleting the comment that corresponds with the id passed in", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+    });
+    test("status 404, responds with 404 if a valid id that is not currently in the data is used", () => {
+        return request(app)
+        .delete("/api/comments/133")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("Endpoint Not Found")
+        })
+    })
+    test("status 400, responds with 400 if an invalid id (wrong data type) is used", () => {
+        return request(app)
+        .delete("/api/comments/strawberry")
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("Bad Request")
+        })
+    })
+});
+
 describe("404 error tests", () => {
     test("status 404: responds with 404 when endpoint is spelt incorrectly", () => {
         return request(app)
