@@ -57,5 +57,21 @@
          }
        ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a comment to the database and returns the added comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 19,
+          "body": "Not my cup of tea",
+          "article_id": 3,
+          "votes": 14,
+          "author": "icellusedkars",
+          "created_at": "2018-05-30T15:59:13.341Z"
+         }
+       ]
+    }
   }
 }
