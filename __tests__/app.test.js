@@ -244,7 +244,7 @@ describe("PATCH /api/articles/:article_id", () => {
     });
 })
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
     test("status 204, responds with 204 after deleting the comment that corresponds with the id passed in", () => {
         return request(app)
         .delete("/api/comments/1")
