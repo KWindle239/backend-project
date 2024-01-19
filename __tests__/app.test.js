@@ -69,7 +69,7 @@ describe("GET /api/articles/:article_id", () => {
                 votes: expect.any(Number),
                 article_img_url: expect.any(String)
                 };
-            expect(body.article).toEqual(expected);
+            expect(body.article).toMatchObject(expected);
         });
     });
     test("status 200, returns an object with the article id (5) provided", () => {
@@ -88,7 +88,15 @@ describe("GET /api/articles/:article_id", () => {
                 votes: expect.any(Number),
                 article_img_url: expect.any(String)
                 };
-            expect(body.article).toEqual(expected);
+            expect(body.article).toMatchObject(expected);
+        });
+    });
+    test("status 200, feature request - returns an object with comment_count property", () => {
+        return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.article).toMatchObject({comment_count: expect.any(String)});
         });
     });
 });
