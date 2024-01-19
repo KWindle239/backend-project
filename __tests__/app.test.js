@@ -3,6 +3,7 @@ const app = require("../app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
+const { forEach } = require("../db/data/test-data/articles.js");
 require("jest-sorted");
 
 beforeEach(() => seed(testData));
@@ -41,7 +42,8 @@ describe("GET /api", () => {
                 "GET /api/articles/:article_id": expect.any(Object),
                 "GET /api/articles/:article_id/comments": expect.any(Object),
                 "POST /api/articles/:article_id/comments": expect.any(Object),
-                "PATCH /api/articles/:article_id": expect.any(Object)
+                "PATCH /api/articles/:article_id": expect.any(Object),
+                "GET /api/users": expect.any(Object)
                 }
             };
             expect(response.body).toEqual(expected);
@@ -50,7 +52,7 @@ describe("GET /api", () => {
     });
 });
 
-describe("GET /api/articles/: article_id", () => {
+describe("GET /api/articles/:article_id", () => {
     test("status 200, returns an object with the article id (3) provided", () => {
         return request(app)
         .get("/api/articles/3")
@@ -126,6 +128,51 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
             unwantedProperty = {body: expect.any(String)};
             expect(body.articles[0]).toEqual(expect.not.objectContaining(unwantedProperty));
+        });
+    });
+});
+
+describe("GET /api/articles?topic", () => {
+    test("status 200, responds with an array of articles on the topic(mitch) passed in", () => {
+    return request(app)
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then(({ body }) => {
+        body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+                topic: "mitch"
+            });
+        })
+        expect(body.articles).toHaveLength(12);
+        });
+    });
+    test("status 200, responds with an array of articles on the topic(cats) passed in", () => {
+        return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    topic: "cats"
+                });
+            })
+            expect(body.articles).toHaveLength(1);
+            });
+        });
+    test("status 404, responds with 404 when the topic passed in does not exist in the database", () => {
+        return request(app)
+        .get("/api/articles?topic=smurfs")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("Not Found")
+        });
+    });
+    test("status 200, responds with an empty array when passed a valid topic which relates to no articles currently", () => {
+        return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.articles).toEqual([])
         });
     });
 });
@@ -255,7 +302,7 @@ describe("DELETE /api/comments/:comment_id", () => {
         .delete("/api/comments/133")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Endpoint Not Found")
+            expect(response.body.msg).toBe("Not Found")
         })
     })
     test("status 400, responds with 400 if an invalid id (wrong data type) is used", () => {
@@ -290,7 +337,7 @@ describe("GET api/users", () => {
         .get("/api/usrs")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Endpoint Not Found");
+            expect(response.body.msg).toBe("Not Found");
         });
     });
 });
@@ -301,7 +348,7 @@ describe("404 error tests", () => {
         .get("/api/tpics")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Endpoint Not Found");
+            expect(response.body.msg).toBe("Not Found");
         });
     });
     test("status 404: GET/api/articles/:article_id: responds with 404 when a valid id that is not currently in our data is used", () => {
@@ -309,7 +356,7 @@ describe("404 error tests", () => {
         .get("/api/articles/30")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Endpoint Not Found");
+            expect(response.body.msg).toBe("Not Found");
         });
     });
     test("status 404: GET/api/articles/:article_id/comments: responds with 404 when a valid id that is not currently in our data is used", () => {
@@ -317,7 +364,7 @@ describe("404 error tests", () => {
         .get("/api/articles/45/comments")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Endpoint Not Found");
+            expect(response.body.msg).toBe("Not Found");
         });
     });
 });

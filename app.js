@@ -23,7 +23,7 @@ app.delete("/api/comments/:comment_id", deleteComment);
 app.get("/api/users", getUsers);
 
 app.all("*", (req, res) => {
-    res.status(404).send({ msg: "Endpoint Not Found"});
+    res.status(404).send({ msg: "Not Found"});
 });
 
 app.use((err, reg, res, next) => {
