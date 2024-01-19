@@ -268,6 +268,33 @@ describe("DELETE /api/comments/:comment_id", () => {
     })
 });
 
+describe("GET api/users", () => {
+    test("status 200, responds with an array of user objects", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+            response.body.users.forEach((user) => {
+                expect(user).toMatchObject({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+            });
+            expect(response.body.users).toBeInstanceOf(Array);
+            expect(response.body.users).toHaveLength(4);
+            });
+        });
+    });
+    test("status 404: responds with 404 when endpoint is spelt incorrectly", () => {
+        return request(app)
+        .get("/api/usrs")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("Endpoint Not Found");
+        });
+    });
+});
+
 describe("404 error tests", () => {
     test("status 404: responds with 404 when endpoint is spelt incorrectly", () => {
         return request(app)
@@ -294,6 +321,8 @@ describe("404 error tests", () => {
         });
     });
 });
+
+
 
 describe("400 error tests", () => {
     test("status 400: GET/api/articles/:article_id: responds with 400 when an invalid (incorrect data type) id is used", () => {
